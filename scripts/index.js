@@ -24,8 +24,8 @@ function createCardElement(cardData, deleteCard) {
 
 // Функция удаления карточки
 function deleteCard(evt) {
-  const targetCard = evt.target.closest(".card");
-  targetCard.remove();
+  const eventTarget = evt.target.parentElement;
+  eventTarget.remove();
 }
 
 // Вывести карточки на страницу
