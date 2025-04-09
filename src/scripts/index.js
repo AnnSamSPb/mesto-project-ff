@@ -1,3 +1,6 @@
+import '../pages/index.css';
+import initialCards from './cards.js';
+
 // Темплейт карточки
 const cardTemplate = document.querySelector("#card-template").content;
 
@@ -23,7 +26,6 @@ const createCardElement = (cardData, onDeleteCard) => {
 }
 
 // Функция удаления карточки
-
 const onDeleteCard = (cardElement) => cardElement.remove();
 
 // Вывести карточки на страницу
