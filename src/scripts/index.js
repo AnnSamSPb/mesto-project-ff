@@ -1,36 +1,83 @@
-import '../pages/index.css';
+import { openModal, closeModal, setupPopupClose } from '../components/modal.js';
+import { createCardElement, handleLike, handleDelete } from '../components/card.js';
 import initialCards from './cards.js';
-
-// Темплейт карточки
-const cardTemplate = document.querySelector("#card-template").content;
+import '../pages/index.css';
 
 // DOM узлы
 const placesList = document.querySelector(".places__list");
+const profileTitle = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
+const popupEdit = document.querySelector(".popup_type_edit");
+const popupNewCard = document.querySelector(".popup_type_new-card");
+const popupImage = document.querySelector(".popup_type_image");
+const formEditProfile = document.forms['edit-profile'];
+const formAddCard = document.forms['new-place'];
 
-// Функция создания карточки
-const createCardElement = (cardData, onDeleteCard) => {
-  const newCard = cardTemplate.querySelector(".card").cloneNode(true);
-
-  newCard.querySelector(".card__image")
+// Единая функция для открытия попапа с изображением
+const openImagePopup = (cardData) => {
+  popupImage.querySelector('.popup__image')
     .src = cardData.link;
-  newCard.querySelector(".card__image")
-    .alt = `Фото случайного места в ${cardData.name}`;
-  newCard.querySelector(".card__title")
+  popupImage.querySelector('.popup__caption')
     .textContent = cardData.name;
+  openModal(popupImage);
+};
 
-  // Обработчик для удаления карточки
-  newCard.querySelector(".card__delete-button")
-    .addEventListener("click", () => onDeleteCard(newCard));
+// Обработчики форм
+const handleProfileFormSubmit = (evt) => {
+  evt.preventDefault();
+  profileTitle.textContent = formEditProfile.elements.name.value;
+  profileDescription.textContent = formEditProfile.elements.description.value;
+  closeModal(popupEdit);
+};
 
-  return newCard;
+const handleAddCardFormSubmit = (evt) => {
+  evt.preventDefault();
+  const newCard = {
+    name: formAddCard.elements['place-name'].value,
+    link: formAddCard.elements.link.value
+  };
+
+  placesList.prepend(createCardElement(
+    newCard,
+    handleLike,
+    handleDelete,
+    openImagePopup
+  ));
+
+  formAddCard.reset();
+  closeModal(popupNewCard);
 }
 
-// Функция удаления карточки
-const onDeleteCard = (cardElement) => cardElement.remove();
+// Инициализация
+const init = () => {
+  // Загрузка карточек
+  initialCards.forEach(cardData => {
+    placesList.append(createCardElement(
+      cardData,
+      handleLike,
+      handleDelete,
+      openImagePopup
+    ));
+  });
 
-// Вывести карточки на страницу
-const renderCardElement = (cardData, container) => {
-  container.append(createCardElement(cardData, onDeleteCard));
-}
+  // Назначаем обработчики событий
+  formEditProfile.addEventListener('submit', handleProfileFormSubmit);
+  formAddCard.addEventListener('submit', handleAddCardFormSubmit);
 
-initialCards.forEach(cardData => renderCardElement(cardData, placesList));
+  document.querySelector('.profile__edit-button').addEventListener('click', () => {
+    formEditProfile.elements.name.value = profileTitle.textContent;
+    formEditProfile.elements.description.value = profileDescription.textContent;
+    openModal(popupEdit);
+  });
+
+  document.querySelector('.profile__add-button').addEventListener('click', () => {
+    openModal(popupNewCard);
+  });
+
+  // Назначаем слушателей
+  setupPopupClose(popupEdit);
+  setupPopupClose(popupNewCard);
+  setupPopupClose(popupImage);
+};
+
+init();
