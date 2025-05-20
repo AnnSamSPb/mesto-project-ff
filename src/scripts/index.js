@@ -24,7 +24,7 @@ const popupImage = document.querySelector(".popup_type_image");
 const formEditProfile = document.forms['edit-profile'];
 const formAddCard = document.forms['new-place'];
 
-const editButton = document.querySelector('.profile__edit-button'),
+const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
 
 // Единая функция для открытия попапа с изображением
