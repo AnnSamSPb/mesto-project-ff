@@ -22,13 +22,12 @@
   display: none;
 }
 
-.popup__input-error_active {
+.popup__input-error_visible {
   display: block;
 }
 
-.popup__input_invalid {
+.popup__input_type_error {
   border-bottom-color: red;
-  /* border-bottom: 1px solid #ff0000; */
 }
 
 

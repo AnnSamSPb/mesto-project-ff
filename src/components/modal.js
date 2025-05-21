@@ -33,30 +33,4 @@ export const setupPopupClose = (modal) => {
       closeModal(modal);
     }
   });
-}
-
-// Вынесем все необходимые элементы формы в константы
-const formElement = document.querySelector('.popup__form');
-const formInput = formElement.querySelector('.popup__input');
-
-// // Регулярные выражения для валидации
-// const nameRegex = /^[a-zA-Zа-яА-ЯёЁ\s-]{2,40}$/;
-// const descriptionRegex = /^[a-zA-Zа-яА-ЯёЁ\s-]{2,200}$/;
-
-// Функция, которая добавляет класс с ошибкой (показывает ошибку)
-// Функция, которая удаляет класс с ошибкой (скрывает ошибку)
-// Функция, которая проверяет валидность поля
-
-
-
-
-
-// Вызовем функцию
-enableValidation();
-
-// Функция проверки на невалидные поля
-
-
-// Функция блокировки кнопки
-
-
+};
