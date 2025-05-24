@@ -4,13 +4,13 @@
 export const openModal = (modal) => {
   modal.classList.add("popup_is-opened");
   document.addEventListener("keyup", handleEscKeyUp);
-}
+};
 
 // Закрытие попапа
 export const closeModal = (modal) => {
   modal.classList.remove("popup_is-opened");
   document.removeEventListener("keyup", handleEscKeyUp);
-}
+};
 
 // Закрытие по Esc
 const handleEscKeyUp = (evt) => {
@@ -18,7 +18,18 @@ const handleEscKeyUp = (evt) => {
     const popup = document.querySelector('.popup_is-opened');
     closeModal(popup);
   }
-}
+};
+
+// Функция управления состоянием кнопки попапа
+export const setButtonState = (button, isLoading, options = {}) => {
+  const {
+    defaultText = 'Сохранить',
+    loadingText = 'Сохранение...'
+  } = options;
+  
+  button.textContent = isLoading ? loadingText : defaultText;
+  button.disabled = isLoading;
+};
 
 // Функция слушателей закрытия по крестику и оверлею
 export const setupPopupClose = (modal) => {
