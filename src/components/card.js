@@ -1,30 +1,4 @@
-import { likeCardApi, unlikeCardApi } from './api.js';
-
-// Функция обработчика лайка
-export const handleLikeClick = (cardId, likeButton, likeCounter) => {
-  return (evt) => {
-    evt.preventDefault();
-    const isLiked = evt.target.classList.contains('card__like-button_is-active');
-    const likeApi = isLiked ? unlikeCardApi : likeCardApi;
-    
-  likeApi(cardId)
-    .then(() => {
-      toggleLike(likeButton);
-      updateLikeCounter(likeCounter, isLiked);
-    })
-    .catch(err => console.error(err));
-  };
-};
-
-// Вспомогательные функции
-const toggleLike = (likeButton) => {
-  likeButton.classList.toggle('card__like-button_is-active');
-};
-
-const updateLikeCounter = (counterElement, isLiked) => {
-  const currentCount = parseInt(counterElement.textContent);
-  counterElement.textContent = isLiked ? currentCount - 1 : currentCount + 1;
-};
+import { likeCardApi, unlikeCardApi } from '../scripts/api';
 
 // Функция создания карточки
 export const createCardElement = (cardData, handleDelete, handleImageClick, userId) => {
@@ -57,18 +31,39 @@ export const createCardElement = (cardData, handleDelete, handleImageClick, user
   }
 
   // Добавление обработчиков событий
-  likeButton.addEventListener("click", handleLikeClick(cardData._id, likeButton, likeCounter));
+  likeButton.addEventListener("click", handleLikeCard(cardData._id, likeButton, likeCount));
   newCard.querySelector(".card__image").addEventListener("click", () => handleImageClick(cardData));
   
   return newCard;
 };
 
-// Функция обработчика событий - лайк
-export const handleLike = (evt) => {
-  evt.target.classList.toggle('card__like-button_is-active');
-};
-
 // Функция обработчика событий - удаление
 export const handleDelete = (cardElement) => {
   cardElement.remove();
+};
+
+// Функция обработчика событий - лайк
+export const handleLikeCard = (cardId, likeButton, likeCount) => {
+  return (evt) => {
+    evt.preventDefault();
+    const isLiked = evt.target.classList.contains('card__like-button_is-active');
+    const likeApi = isLiked ? unlikeCardApi : likeCardApi;
+    
+  likeApi(cardId)
+    .then(() => {
+      toggleLike(likeButton);
+      updateLikeCounter(likeCount, isLiked);
+    })
+    .catch(err => console.error(err));
+  };
+};
+
+// Вспомогательные функции
+const toggleLike = (likeButton) => {
+  likeButton.classList.toggle('card__like-button_is-active');
+};
+
+const updateLikeCounter = (counterElement, isLiked) => {
+  const currentCount = parseInt(counterElement.textContent);
+  counterElement.textContent = isLiked ? currentCount - 1 : currentCount + 1;
 };

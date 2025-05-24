@@ -1,12 +1,10 @@
 import {
   openModal,
   closeModal,
-  setupPopupClose,
-  setButtonState
+  setupPopupClose
 } from '../components/modal.js';
 import {
   createCardElement,
-  handleLikeClick,
   handleDelete
 } from '../components/card.js';
 import { setButtonState } from '../components/utils.js';
