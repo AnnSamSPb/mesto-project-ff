@@ -6,9 +6,10 @@ import {
 } from '../components/modal.js';
 import {
   createCardElement,
-  handleLike,
+  handleLikeClick,
   handleDelete
 } from '../components/card.js';
+import { setButtonState } from '../components/utils.js';
 import {
   enableValidation,
   clearValidation
@@ -19,9 +20,7 @@ import {
   updateAvatarApi,
   getInitialCardsApi,
   addNewCardApi,
-  deleteCardApi,
-  likeCardApi,
-  unlikeCardApi
+  deleteCardApi
 } from './api.js';
 import '../pages/index.css';
 
@@ -46,12 +45,17 @@ const popupNewCard = document.querySelector(".popup_type_new-card");
 const popupImage = document.querySelector(".popup_type_image");
 const popupAvatar = document.querySelector(".popup_type_avatar");
 const popupDelete = document.querySelector(".popup_type_confirm-delete");
-const confirmDeleteBtn = popupDelete.querySelector(".popup__button");
 const formEditProfile = document.forms['edit-profile'];
 const formAddCard = document.forms['new-place'];
 const formAvatar = document.forms['avatar-form'];
 const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
+const formButtons = {
+  editProfile: formEditProfile.querySelector('.popup__button'),
+  addCard: formAddCard.querySelector('.popup__button'),
+  avatar: formAvatar.querySelector('.popup__button'),
+  confirmDelete: popupDelete.querySelector('.popup__button') // Добавляем сюда
+};
 
 let userId = null;
 let currentCardToDelete = null;
@@ -76,9 +80,7 @@ const handleProfileFormSubmit = (evt) => {
   const name = formEditProfile.elements.name.value;
   const about = formEditProfile.elements.description.value;
   
-  const submitButton = formEditProfile.querySelector('.popup__button');
-  
-  setButtonState(submitButton, true);
+  setButtonState(formButtons.editProfile, true);
 
   updateProfileInfoApi(name, about)
     .then((userData) => {
@@ -87,7 +89,7 @@ const handleProfileFormSubmit = (evt) => {
       closeModal(popupEdit);
     })
     .catch(err => console.error(err))
-    .finally(() => setButtonState(submitButton, false));
+    .finally(() => setButtonState(formButtons.editProfile, false));
 };
 
 // Обработчик добавления новой карточки
@@ -95,17 +97,14 @@ const handleAddCardFormSubmit = (evt) => {
   evt.preventDefault();
   const name = formAddCard.elements['place-name'].value;
   const link = formAddCard.elements.link.value;
-
-  const submitButton = formAddCard.querySelector('.popup__button');
   
-  setButtonState(submitButton, true);
+  setButtonState(formButtons.addCard, true);
 
   addNewCardApi(name, link)
     .then((newCard) => {
       placesList.prepend(
         createCardElement(
-          newCard, 
-          (evt) => handleLikeCard(evt, newCard._id), 
+          newCard,
           (element) => handleDeleteCard(newCard._id, element), 
           openImagePopup,
           userId
@@ -116,7 +115,7 @@ const handleAddCardFormSubmit = (evt) => {
       closeModal(popupNewCard);
     })
     .catch(err => console.error(err))
-    .finally(() => setButtonState(submitButton, false));
+    .finally(() => setButtonState(formButtons.addCard, false));
 };
 
 // Обработчик отправки формы аватврки
@@ -124,8 +123,7 @@ const handleAvatarFormSubmit = (evt) => {
   evt.preventDefault();
   const avatar = formAvatar.elements['avatar-link'].value;
   
-  const submitButton = formAvatar.querySelector('.popup__button');
-  setButtonState(submitButton, true, 'Сохранить');
+  setButtonState(formButtons.avatar, true);
 
   updateAvatarApi(avatar)
     .then((userData) => {
@@ -133,31 +131,14 @@ const handleAvatarFormSubmit = (evt) => {
       closeModal(popupAvatar);
     })
     .catch(err => console.error(err))
-    .finally(() => setButtonState(submitButton, false));
-};
-
-// Обработчик лайка
-const handleLikeCard = (evt, cardId) => {
-  const isLiked = evt.target.classList.contains('card__like-button_is-active');
-  const likeApi = isLiked ? unlikeCardApi : likeCardApi;
-  
-  likeApi(cardId)
-    .then(() => {
-      handleLike(evt);
-      // Обновляем счетчик лайков
-      const likeCount = evt.target.nextElementSibling;
-      likeCount.textContent = isLiked 
-        ? parseInt(likeCount.textContent) - 1 
-        : parseInt(likeCount.textContent) + 1;
-    })
-    .catch(err => console.error(err));
+    .finally(() => setButtonState(formButtons.avatar, false));
 };
 
 // Обработчик удаления карточки
 const handleDeleteCard = (cardId, cardElement) => {
   openModal(popupDelete);
   
-  setButtonState(confirmDeleteBtn, false, {
+  setButtonState(formButtons.confirmDelete, false, {
     defaultText: 'Да',
     loadingText: 'Удаление...'
   });
@@ -165,7 +146,7 @@ const handleDeleteCard = (cardId, cardElement) => {
   currentCardToDelete = { cardId, cardElement };
 };
 
-confirmDeleteBtn.addEventListener('click', () => {
+formButtons.confirmDelete.addEventListener('click', () => {
   if (!currentCardToDelete) return;
   
   deleteCardApi(currentCardToDelete.cardId)
@@ -175,9 +156,10 @@ confirmDeleteBtn.addEventListener('click', () => {
     })
     .catch(err => {
       console.error(err);
-      setButtonState(confirmDeleteBtn, false);
+      setButtonState(formButtons.confirmDelete, false);
     })
     .finally(() => {
+      setButtonState(formButtons.confirmDelete, false)
       currentCardToDelete = null;
     });
 });
@@ -188,7 +170,6 @@ const initCards = (cards, userId) => {
   cards.forEach(cardData => {
     placesList.append(createCardElement(
       cardData,
-      (evt) => handleLikeCard(evt, cardData._id),
       (element) => handleDeleteCard(cardData._id, element),
       openImagePopup,
       userId

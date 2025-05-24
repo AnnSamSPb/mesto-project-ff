@@ -20,17 +20,6 @@ const handleEscKeyUp = (evt) => {
   }
 };
 
-// Функция управления состоянием кнопки попапа
-export const setButtonState = (button, isLoading, options = {}) => {
-  const {
-    defaultText = 'Сохранить',
-    loadingText = 'Сохранение...'
-  } = options;
-  
-  button.textContent = isLoading ? loadingText : defaultText;
-  button.disabled = isLoading;
-};
-
 // Функция слушателей закрытия по крестику и оверлею
 export const setupPopupClose = (modal) => {
   const closeButton = modal.querySelector(".popup__close");
