@@ -147,6 +147,8 @@ const handleDeleteCard = (cardId, cardElement) => {
 formButtons.confirmDelete.addEventListener('click', () => {
   if (!currentCardToDelete) return;
   
+  setButtonState(formButtons.confirmDelete, true);
+
   deleteCardApi(currentCardToDelete.cardId)
     .then(() => {
       handleDelete(currentCardToDelete.cardElement);
@@ -154,7 +156,6 @@ formButtons.confirmDelete.addEventListener('click', () => {
     })
     .catch(err => {
       console.error(err);
-      setButtonState(formButtons.confirmDelete, false);
     })
     .finally(() => {
       setButtonState(formButtons.confirmDelete, false)
